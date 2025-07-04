@@ -1,7 +1,7 @@
 # Care Hello
 
-[![Release Status](https://img.shields.io/pypi/v/care_hello.svg)](https://pypi.python.org/pypi/care_hello)
-[![Build Status](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml/badge.svg)](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml)
+[![Release Status](https://img.shields.io/pypi/v/care_diet.svg)](https://pypi.python.org/pypi/care_hello)
+[![Build Status](https://github.com/ohcnetwork/care_diet/actions/workflows/build.yaml/badge.svg)](https://github.com/ohcnetwork/care_hello/actions/workflows/build.yaml)
 
 Care Hello is a sample plugin, a plugin boilerplate to begin developing the plugin for care.
 
@@ -13,7 +13,7 @@ To develop the plug in local environment along with care, follow the steps below
 
 ```bash
 cd care
-git clone git@github.com:ohcnetwork/care_hello.git
+git clone git@github.com:ohcnetwork/care_diet.git
 ```
 
 2. Add the plugin config in plug_config.py
@@ -21,13 +21,13 @@ git clone git@github.com:ohcnetwork/care_hello.git
 ```python
 ...
 
-hello_plugin = Plug(
-    name="hello", # name of the django app in the plugin
-    package_name="/app/care_hello", # this has to be /app/ + plugin folder name
+diet_plugin = Plug(
+    name="diet", # name of the django app in the plugin
+    package_name="/app/care_diet", # this has to be /app/ + plugin folder name
     version="", # keep it empty for local development
     configs={}, # plugin configurations if any
 )
-plugs = [hello_plug]
+plugs = [diet_plug]
 
 ...
 ```
@@ -56,18 +56,18 @@ make up
 
 ## Production Setup
 
-To install care hello, you can add the plugin config in [care/plug_config.py](https://github.com/ohcnetwork/care/blob/develop/plug_config.py) as follows:
+To install care diet, you can add the plugin config in [care/plug_config.py](https://github.com/ohcnetwork/care/blob/develop/plug_config.py) as follows:
 
 ```python
 ...
 
-hello_plug = Plug(
-    name="hello",
-    package_name="git+https://github.com/ohcnetwork/care_hello.git",
+diet_plug = Plug(
+    name="diet",
+    package_name="git+https://github.com/ohcnetwork/care_diet.git",
     version="@master",
     configs={},
 )
-plugs = [hello_plug]
+plugs = [diet_plug]
 ...
 ```
 
