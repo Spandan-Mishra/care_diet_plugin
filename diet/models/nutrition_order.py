@@ -3,6 +3,7 @@ from care.facility.models import Facility
 from care.users.models import User
 from care.emr.models.patient import Patient
 from care.emr.models.location import FacilityLocation
+from care.emr.models.encounter import Encounter
 
 class NutritionOrder(models.Model):
     STATUS_CHOICES = [
@@ -23,6 +24,7 @@ class NutritionOrder(models.Model):
     prescribed_by = models.ForeignKey(User, on_delete=models.PROTECT)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
     location = models.ForeignKey(FacilityLocation, on_delete=models.PROTECT)
+    encounter = models.ForeignKey(Encounter, on_delete=models.PROTECT)
     service_type = models.CharField(max_length=32, choices=SERVICE_TYPE_CHOICES, default="food")
     products = models.ManyToManyField("NutritionProduct", related_name="orders")
 
