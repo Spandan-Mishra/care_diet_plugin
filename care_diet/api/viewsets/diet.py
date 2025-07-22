@@ -7,18 +7,18 @@ from rest_framework.mixins import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
-from diet.api.serializers.hello import HelloSerializer
-from diet.models.hello import Hello
+from diet.api.serializers.diet import DietSerializer
+from diet.models.diet import Diet
 
 
-class HelloViewset(
+class DietViewset(
     RetrieveModelMixin,
     ListModelMixin,
     CreateModelMixin,
     UpdateModelMixin,
     GenericViewSet
 ):
-    queryset = Hello.objects.all().order_by("-created_date")
-    serializer_class = HelloSerializer
+    queryset = Diet.objects.all().order_by("-created_date")
+    serializer_class = DietSerializer
     lookup_field = "external_id"
     permission_classes = [IsAuthenticated]
