@@ -1,10 +1,10 @@
 from django.urls import path
 from rest_framework.routers import SimpleRouter
-from care_diet_plugin.diet.api.viewsets.canteen import CanteenOrderViewSet
-from care_diet_plugin.diet.api.viewsets.dietician import DieticianOrderListViewSet, DieticianMealViewSet
-from care_diet_plugin.diet.api.viewsets.intake_log import IntakeLogViewSet
-from care_diet_plugin.diet.api.viewsets.encounter_nutrition_order import EncounterNutritionOrderViewSet
-from diet.api.viewsets.diet import DietViewset
+from care_diet.api.viewsets.canteen import CanteenOrderViewSet
+from care_diet.api.viewsets.dietician import DieticianOrderListViewSet, DieticianMealViewSet
+from care_diet.api.viewsets.intake_log import IntakeLogViewSet
+from care_diet.api.viewsets.encounter_nutrition_order import EncounterNutritionOrderViewSet
+from care_diet.api.viewsets.diet import DietViewset
 
 class OptionalSlashRouter(SimpleRouter):
     def __init__(self):

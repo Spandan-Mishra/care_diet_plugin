@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('diet', '0001_initial'),
+        ('care_diet', '0001_initial'),
         ('emr', '0029_encounter_discharge_summary_advice'),
         ('facility', '0477_alter_facility_facility_type_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

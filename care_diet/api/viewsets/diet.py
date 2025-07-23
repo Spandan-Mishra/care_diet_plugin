@@ -7,8 +7,8 @@ from rest_framework.mixins import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
-from diet.api.serializers.diet import DietSerializer
-from diet.models.diet import Diet
+from care_diet.api.serializers.diet import DietSerializer
+from care_diet.models.diet import Diet
 
 
 class DietViewset(

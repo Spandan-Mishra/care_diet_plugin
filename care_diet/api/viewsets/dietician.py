@@ -1,7 +1,7 @@
 from rest_framework import viewsets, mixins
 from care.emr.models.encounter import Encounter
-from care_diet_plugin.diet.models.nutrition_order import NutritionOrder
-from care_diet_plugin.diet.api.serializers.dietician import DieticianOrderListSerializer, DieticianMealSerializer
+from care_diet.models.nutrition_order import NutritionOrder
+from care_diet.api.serializers.dietician import DieticianOrderListSerializer, DieticianMealSerializer
 from care.facility.models import Facility
 
 class DieticianOrderListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

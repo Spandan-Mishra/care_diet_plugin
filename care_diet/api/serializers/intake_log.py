@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from care_diet_plugin.diet.models.nutrition_intake import NutritionIntake
+from care_diet.models.nutrition_intake import NutritionIntake
 
 class IntakeLogSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,6 +1,6 @@
 from rest_framework import viewsets, mixins
-from care_diet_plugin.diet.models.nutrition_order import NutritionOrder
-from care_diet_plugin.diet.api.serializers.encounter_nutrition_order import EncounterNutritionOrderSerializer
+from care_diet.models.nutrition_order import NutritionOrder
+from care_diet.api.serializers.encounter_nutrition_order import EncounterNutritionOrderSerializer
 
 class EncounterNutritionOrderViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = EncounterNutritionOrderSerializer
