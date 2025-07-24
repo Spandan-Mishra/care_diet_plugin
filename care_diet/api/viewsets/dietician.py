@@ -17,3 +17,6 @@ class DieticianOrderListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class DieticianMealViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = NutritionOrder.objects.all()
     serializer_class = DieticianMealSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(prescribed_by=self.request.user)

@@ -5,3 +5,6 @@ from care_diet.api.serializers.intake_log import IntakeLogSerializer
 class IntakeLogViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = NutritionIntake.objects.all()
     serializer_class = IntakeLogSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(logged_by=self.request.user)
