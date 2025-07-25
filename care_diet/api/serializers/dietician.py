@@ -1,8 +1,12 @@
+import datetime
+from pydantic import UUID4
 from rest_framework import serializers
 from care.emr.models.encounter import Encounter
-from care_diet.models.nutrition_order import NutritionOrder
 from care.emr.models.patient import Patient
-from care.facility.models import Facility, FacilityLocation
+from care_diet.models.nutrition_order import NutritionOrder
+from care.emr.resources.base import EMRResource
+from care.facility.models import Facility
+from care.emr.models.location import FacilityLocation
 
 class DieticianOrderListSerializer(serializers.ModelSerializer):
     patient = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -11,44 +15,27 @@ class DieticianOrderListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Encounter
-        fields = [
-            "id",
-            "patient",
-            "facility",
-            "current_location",
-            "status",
-        ]
+        fields = ["id", "patient", "facility", "current_location", "status"]
 
-class DieticianMealSerializer(serializers.ModelSerializer):
 
-    patient = serializers.PrimaryKeyRelatedField(
-        queryset=Patient.objects.all(), source="patient", to_field="external_id"
-    )
-    encounter = serializers.PrimaryKeyRelatedField(
-        queryset=Encounter.objects.all(), source="encounter", to_field="external_id"
-    )
-    facility = serializers.PrimaryKeyRelatedField(
-        queryset=Facility.objects.all(), source="facility", to_field="external_id"
-    )
-    location = serializers.PrimaryKeyRelatedField(
-        queryset=FacilityLocation.objects.all(), source="location", to_field="external_id"
-    )
+class NutritionOrderCreateSpec(EMRResource):
+    __model__ = NutritionOrder
+    __exclude__ = ["patient", "encounter", "facility", "location", "prescribed_by"]
 
-    prescribed_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    patient: UUID4
+    encounter: UUID4
+    facility: UUID4
+    location: UUID4
 
-    class Meta:
-        model = NutritionOrder
-        fields = [
-            "id",
-            "encounter",
-            "patient",
-            "prescribed_by",
-            "facility",
-            "location",
-            "service_type",
-            "products",
-            "datetime",
-            "status",
-            "schedule",
-            "note",
-        ]
+    service_type: str
+    products: list
+    datetime: datetime.datetime
+    status: str
+    schedule: dict
+    note: str | None = None
+
+    def perform_extra_deserialization(self, is_update, obj):
+        obj.patient = Patient.objects.get(external_id=self.patient)
+        obj.encounter = Encounter.objects.get(external_id=self.encounter)
+        obj.facility = Facility.objects.get(external_id=self.facility)
+        obj.location = FacilityLocation.objects.get(external_id=self.location)

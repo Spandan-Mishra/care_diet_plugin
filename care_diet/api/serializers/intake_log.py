@@ -1,39 +1,31 @@
+import datetime
+from pydantic import UUID4
 from rest_framework import serializers
 from care_diet.models.nutrition_intake import NutritionIntake
+from care.emr.resources.base import EMRResource
 from care.emr.models.patient import Patient
 from care.emr.models.encounter import Encounter
-from care.facility.models import Facility, FacilityLocation
+from care.facility.models import Facility
+from care.emr.models.location import FacilityLocation
 
-class IntakeLogSerializer(serializers.ModelSerializer):
+class NutritionIntakeCreateSpec(EMRResource):
+    __model__ = NutritionIntake
+    __exclude__ = ["patient", "encounter", "facility", "location", "logged_by"]
 
-    patient = serializers.PrimaryKeyRelatedField(
-        queryset=Patient.objects.all(), source="patient", to_field="external_id"
-    )
-    encounter = serializers.PrimaryKeyRelatedField(
-        queryset=Encounter.objects.all(), source="encounter", to_field="external_id"
-    )
-    facility = serializers.PrimaryKeyRelatedField(
-        queryset=Facility.objects.all(), source="facility", to_field="external_id"
-    )
-    location = serializers.PrimaryKeyRelatedField(
-        queryset=FacilityLocation.objects.all(), source="location", to_field="external_id"
-    )
+    patient: UUID4
+    encounter: UUID4
+    facility: UUID4
+    location: UUID4
 
-    logged_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    service_type: str
+    status: str
+    status_reason: str | None = None
+    intake_items: list
+    occurrence_datetime: datetime.datetime
+    note: str | None = None
 
-    class Meta:
-        model = NutritionIntake
-        fields = [
-            "id",
-            "patient",
-            "encounter",
-            "logged_by",
-            "facility",
-            "location",
-            "service_type",
-            "status",
-            "status_reason",
-            "intake_items",
-            "occurrence_datetime",
-            "note",
-        ]
+    def perform_extra_deserialization(self, is_update, obj):
+        obj.patient = Patient.objects.get(external_id=self.patient)
+        obj.encounter = Encounter.objects.get(external_id=self.encounter)
+        obj.facility = Facility.objects.get(external_id=self.facility)
+        obj.location = FacilityLocation.objects.get(external_id=self.location)

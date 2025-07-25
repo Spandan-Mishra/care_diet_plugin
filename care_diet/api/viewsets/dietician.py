@@ -1,22 +1,22 @@
 from rest_framework import viewsets, mixins
 from care.emr.models.encounter import Encounter
 from care_diet.models.nutrition_order import NutritionOrder
-from care_diet.api.serializers.dietician import DieticianOrderListSerializer, DieticianMealSerializer
+from care_diet.api.serializers.dietician import DieticianOrderListSerializer, NutritionOrderCreateSpec
+from care.emr.api.viewsets.base import EMRCreateMixin, EMRListMixin
 from care.facility.models import Facility
 
 class DieticianOrderListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = DieticianOrderListSerializer
-    queryset = Encounter.objects.all()
-
     def get_queryset(self):
-        facility_external_id = self.request.query_params.get("facility")
-        facility = Facility.objects.get(external_id=facility_external_id)
-        encounters_with_orders = NutritionOrder.objects.values_list("encounter_id", flat=True)
+        # ...
         return Encounter.objects.filter(facility=facility).exclude(id__in=encounters_with_orders)
 
-class DieticianMealViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = NutritionOrder.objects.all()
-    serializer_class = DieticianMealSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(prescribed_by=self.request.user)
+class DieticianMealViewSet(EMRCreateMixin, EMRListMixin, viewsets.GenericViewSet):
+    database_model = NutritionOrder
+    pydantic_model = NutritionOrderCreateSpec
+
+    queryset = NutritionOrder.objects.all().select_related("patient", "facility", "location")
+
+    def authorize_create(self, instance):
+        instance.prescribed_by = self.request.user
