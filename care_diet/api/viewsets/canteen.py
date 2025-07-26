@@ -8,10 +8,8 @@ class CanteenOrderViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, viewse
     queryset = NutritionOrder.objects.exclude(status__in=["completed", "revoked"]).select_related("patient")
 
     def get_serializer_class(self):
-        # Use a simple serializer just for updating status
         if self.action in ['update', 'partial_update']:
             return CanteenOrderUpdateSerializer
-        # Use the full serializer for listing orders
         return NutritionOrderSerializer
 
     def get_queryset(self):

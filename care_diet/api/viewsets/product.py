@@ -8,4 +8,4 @@ class NutritionProductViewSet(viewsets.ModelViewSet):
     """
     queryset = NutritionProduct.objects.filter(deleted=False)
     serializer_class = NutritionProductSerializer
-    lookup_field = "external_id" # Use UUID for detail view URLs
+    lookup_field = "external_id"
