@@ -1,3 +1,4 @@
+from care.emr.models.base import EMRBaseModel
 from django.db import models
 from care.facility.models import Facility
 from care.users.models import User
@@ -5,7 +6,7 @@ from care.emr.models.patient import Patient
 from care.emr.models.location import FacilityLocation
 from care.emr.models.encounter import Encounter
 
-class NutritionOrder(models.Model):
+class NutritionOrder(EMRBaseModel):
     STATUS_CHOICES = [
         ("draft", "Draft"),
         ("active", "Active"),

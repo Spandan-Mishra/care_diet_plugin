@@ -1,16 +1,8 @@
 from rest_framework import serializers
-from care_diet.models.nutrition_order import NutritionOrder
+from care_diet.models import NutritionOrder
 
-class CanteenOrderSerializer(serializers.ModelSerializer):
+class CanteenOrderUpdateSerializer(serializers.ModelSerializer):
+    """A simple serializer for the Canteen to update only the order status."""
     class Meta:
         model = NutritionOrder
-        fields = [
-            "id",
-            "patient",
-            "products",
-            "status",
-            "location",
-            "facility",
-            "datetime",
-            "note",
-        ]
+        fields = ("status",)

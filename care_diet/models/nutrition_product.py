@@ -1,8 +1,9 @@
+from care.emr.models.base import EMRBaseModel
 from django.db import models
 from care.facility.models import Facility
 from care.emr.models.location import FacilityLocation
 
-class NutritionProduct(models.Model):
+class NutritionProduct(EMRBaseModel):
     STATUS_CHOICES = [
         ("active", "Active"),
         ("inactive", "Inactive"),

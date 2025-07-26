@@ -1,31 +1,22 @@
-import datetime
-from pydantic import UUID4
 from rest_framework import serializers
-from care_diet.models.nutrition_intake import NutritionIntake
-from care.emr.resources.base import EMRResource
-from care.emr.models.patient import Patient
-from care.emr.models.encounter import Encounter
+from care_diet.models import NutritionIntake
+from care.emr.models import Patient, Encounter, FacilityLocation
 from care.facility.models import Facility
-from care.emr.models.location import FacilityLocation
 
-class NutritionIntakeCreateSpec(EMRResource):
-    __model__ = NutritionIntake
-    __exclude__ = ["patient", "encounter", "facility", "location", "logged_by"]
+class NutritionIntakeSerializer(serializers.ModelSerializer):
+    """Serializer for creating and viewing a Nutrition Intake log."""
+    patient = serializers.SlugRelatedField(slug_field="external_id", queryset=Patient.objects.all())
+    encounter = serializers.SlugRelatedField(slug_field="external_id", queryset=Encounter.objects.all())
+    facility = serializers.SlugRelatedField(slug_field="external_id", queryset=Facility.objects.all())
+    location = serializers.SlugRelatedField(slug_field="external_id", queryset=FacilityLocation.objects.all())
+    logged_by = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    patient: UUID4
-    encounter: UUID4
-    facility: UUID4
-    location: UUID4
+    class Meta:
+        model = NutritionIntake
+        fields = "__all__"
+        read_only_fields = ("logged_by",)
 
-    service_type: str
-    status: str
-    status_reason: str | None = None
-    intake_items: list
-    occurrence_datetime: datetime.datetime
-    note: str | None = None
-
-    def perform_extra_deserialization(self, is_update, obj):
-        obj.patient = Patient.objects.get(external_id=self.patient)
-        obj.encounter = Encounter.objects.get(external_id=self.encounter)
-        obj.facility = Facility.objects.get(external_id=self.facility)
-        obj.location = FacilityLocation.objects.get(external_id=self.location)
+    def create(self, validated_data):
+        validated_data["logged_by"] = self.context["request"].user
+        validated_data["deleted"] = False
+        return super().create(validated_data)

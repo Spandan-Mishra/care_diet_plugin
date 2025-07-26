@@ -1,3 +1,4 @@
+from care_diet.care_diet.api.viewsets.product import NutritionProductViewSet
 from django.urls import path
 from rest_framework.routers import SimpleRouter
 from care_diet.api.viewsets.canteen import CanteenOrderViewSet
@@ -12,6 +13,7 @@ class OptionalSlashRouter(SimpleRouter):
         self.trailing_slash = "/?"
 
 router = OptionalSlashRouter()
+router.register("products", NutritionProductViewSet, basename="diet__nutrition-product")
 router.register("dietician-orders", DieticianOrderListViewSet, basename="diet__dietician_orders")
 router.register("dietician-meals", DieticianMealViewSet, basename="diet__dietician_meals")
 router.register("canteen-orders", CanteenOrderViewSet, basename="diet__canteen_orders")
