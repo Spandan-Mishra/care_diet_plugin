@@ -22,3 +22,6 @@ class DieticianMealViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Creates a new Nutrition Order."""
     queryset = NutritionOrder.objects.all()
     serializer_class = NutritionOrderSerializer
+
+    def get_serializer_context(self):
+        return {"request": self.request}

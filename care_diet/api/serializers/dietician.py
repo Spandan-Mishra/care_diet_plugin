@@ -15,17 +15,12 @@ class DieticianEncounterSerializer(serializers.ModelSerializer):
 
 
 class NutritionOrderSerializer(serializers.ModelSerializer):
-    """
-    Handles creating and displaying a full Nutrition Order.
-    This is the definitive, working version.
-    """
+    id = serializers.UUIDField(source="external_id", read_only=True)
     patient = serializers.SlugRelatedField(slug_field="external_id", queryset=Patient.objects.all())
     encounter = serializers.SlugRelatedField(slug_field="external_id", queryset=Encounter.objects.all())
     facility = serializers.SlugRelatedField(slug_field="external_id", queryset=Facility.objects.all())
     location = serializers.SlugRelatedField(slug_field="external_id", queryset=FacilityLocation.objects.all())
-
     prescribed_by = serializers.PrimaryKeyRelatedField(read_only=True)
-
     products = serializers.SlugRelatedField(
         slug_field="external_id",
         queryset=NutritionProduct.objects.all(),
@@ -39,5 +34,12 @@ class NutritionOrderSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "external_id", "prescribed_by", "created_date", "modified_date", "deleted")
 
     def create(self, validated_data):
+        product_data = validated_data.pop('products', [])
         validated_data["prescribed_by"] = self.context["request"].user
-        return super().create(validated_data)
+
+        order = NutritionOrder.objects.create(**validated_data)
+
+        if product_data:
+            order.products.set(product_data)
+
+        return order

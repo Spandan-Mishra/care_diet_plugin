@@ -25,7 +25,6 @@ class NutritionIntake(EMRBaseModel):
     encounter = models.ForeignKey(Encounter, on_delete=models.PROTECT)
     logged_by = models.ForeignKey(User, on_delete=models.PROTECT)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
-    location = models.ForeignKey(FacilityLocation, on_delete=models.PROTECT)
     service_type = models.CharField(max_length=32, choices=SERVICE_TYPE_CHOICES, default="food")
 
     status = models.CharField(max_length=32, choices=STATUS_CHOICES)

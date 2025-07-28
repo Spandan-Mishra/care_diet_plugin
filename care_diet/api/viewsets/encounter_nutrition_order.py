@@ -1,13 +1,20 @@
 from rest_framework import viewsets, mixins
-from care_diet.models.nutrition_order import NutritionOrder
-from care_diet.api.serializers.encounter_nutrition_order import EncounterNutritionOrderSerializer
+from care_diet.models import NutritionOrder
+from ..serializers.encounter_nutrition_order import EncounterNutritionOrderSerializer
 
 class EncounterNutritionOrderViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Lists all Nutrition Orders for a specific Encounter.
+    This version correctly filters by the Encounter's UUID (external_id).
+    """
     serializer_class = EncounterNutritionOrderSerializer
-    queryset = NutritionOrder.objects.all()
+    queryset = NutritionOrder.objects.filter(deleted=False)
 
     def get_queryset(self):
-        encounter_id = self.request.query_params.get("encounter")
-        if encounter_id:
-            return NutritionOrder.objects.filter(encounter_id=encounter_id)
-        return NutritionOrder.objects.none()
+        qs = super().get_queryset()
+        encounter_uuid = self.request.query_params.get("encounter")
+
+        if encounter_uuid:
+            return qs.filter(encounter__external_id=encounter_uuid)
+
+        return qs.none()

@@ -7,12 +7,14 @@ class NutritionProductSerializer(serializers.ModelSerializer):
     """
     Serializer for creating and managing Nutrition Products.
     """
+    id = serializers.UUIDField(source="external_id", read_only=True)
     facility = serializers.SlugRelatedField(
         slug_field="external_id", queryset=Facility.objects.all()
     )
     location = serializers.SlugRelatedField(
         slug_field="external_id", queryset=FacilityLocation.objects.all()
     )
+
 
     class Meta:
         model = NutritionProduct

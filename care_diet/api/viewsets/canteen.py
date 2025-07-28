@@ -1,11 +1,15 @@
 from rest_framework import viewsets, mixins
 from care_diet.models import NutritionOrder
-from care_diet.api.serializers.dietician import NutritionOrderSerializer
-from care_diet.api.serializers.canteen import CanteenOrderUpdateSerializer
+from ..serializers.dietician import NutritionOrderSerializer
+from ..serializers.canteen import CanteenOrderUpdateSerializer
 
 class CanteenOrderViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
-    """Lists and updates status of Nutrition Orders for the Canteen."""
-    queryset = NutritionOrder.objects.exclude(status__in=["completed", "revoked"]).select_related("patient")
+    """
+    Lists and updates status of Nutrition Orders for the Canteen.
+    This version correctly handles both LIST and UPDATE actions.
+    """
+    queryset = NutritionOrder.objects.exclude(status__in=["completed", "revoked"]).select_related("patient", "encounter")
+    lookup_field = "external_id"
 
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update']:
@@ -13,7 +17,11 @@ class CanteenOrderViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, viewse
         return NutritionOrderSerializer
 
     def get_queryset(self):
-        facility_id = self.request.query_params.get("facility")
-        if facility_id:
-            return self.queryset.filter(facility__external_id=facility_id)
-        return self.queryset.none()
+        qs = super().get_queryset()
+        if self.action == 'list':
+            facility_id = self.request.query_params.get("facility")
+            if facility_id:
+                return qs.filter(facility__external_id=facility_id)
+            return qs.none()
+
+        return qs
