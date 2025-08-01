@@ -1,4 +1,4 @@
-from care_diet.care_diet.api.viewsets.product import NutritionProductViewSet
+from care_diet.api.viewsets.product import NutritionProductViewSet
 from django.urls import path
 from rest_framework.routers import SimpleRouter
 from care_diet.api.viewsets.canteen import CanteenOrderViewSet
