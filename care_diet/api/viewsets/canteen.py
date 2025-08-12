@@ -20,8 +20,15 @@ class CanteenOrderViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, viewse
         qs = super().get_queryset()
         if self.action == 'list':
             facility_id = self.request.query_params.get("facility")
+            location_id = self.request.query_params.get("location")
+
             if facility_id:
-                return qs.filter(facility__external_id=facility_id)
-            return qs.none()
+                qs = qs.filter(facility__external_id=facility_id)
+
+            if location_id:
+                qs = qs.filter(location__external_id=location_id)
+
+            if not facility_id:
+                return qs.none()
 
         return qs
