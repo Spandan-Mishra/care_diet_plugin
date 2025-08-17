@@ -1,19 +1,23 @@
 from rest_framework import viewsets, mixins
 from care_diet.models import NutritionOrder
 from ..serializers.dietician import NutritionOrderSerializer
-from ..serializers.canteen import CanteenOrderUpdateSerializer
+from ..serializers.canteen import CanteenOrderUpdateSerializer, CanteenOrderListSerializer
 
 class CanteenOrderViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """
     Lists and updates status of Nutrition Orders for the Canteen.
     This version correctly handles both LIST and UPDATE actions.
     """
-    queryset = NutritionOrder.objects.exclude(status__in=["completed", "revoked"]).select_related("patient", "encounter")
+    queryset = NutritionOrder.objects.exclude(status__in=["completed", "revoked"]).select_related(
+        "patient", "encounter", "encounter__current_location", "prescribed_by", "facility", "location"
+    ).prefetch_related("products")
     lookup_field = "external_id"
 
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update']:
             return CanteenOrderUpdateSerializer
+        elif self.action == 'list':
+            return CanteenOrderListSerializer
         return NutritionOrderSerializer
 
     def get_queryset(self):
