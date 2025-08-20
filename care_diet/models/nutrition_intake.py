@@ -25,6 +25,7 @@ class NutritionIntake(EMRBaseModel):
     encounter = models.ForeignKey(Encounter, on_delete=models.PROTECT)
     logged_by = models.ForeignKey(User, on_delete=models.PROTECT)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
+    nutrition_order = models.ForeignKey("NutritionOrder", on_delete=models.PROTECT, related_name="intake_logs", null=True, blank=True)
     service_type = models.CharField(max_length=32, choices=SERVICE_TYPE_CHOICES, default="food")
 
     status = models.CharField(max_length=32, choices=STATUS_CHOICES)

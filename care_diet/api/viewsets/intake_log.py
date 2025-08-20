@@ -26,9 +26,15 @@ class IntakeLogViewSet(viewsets.ModelViewSet):
         if location:
             queryset = queryset.filter(encounter__current_location=location)
 
-        # Filter by nutrition order if provided
-        nutrition_order = self.request.query_params.get('nutrition_order')
-        if nutrition_order:
-            queryset = queryset.filter(nutrition_order=nutrition_order)
+        # Filter by encounter if provided
+        encounter = self.request.query_params.get('encounter')
+        if encounter:
+            queryset = queryset.filter(encounter=encounter)
 
-        return queryset
+        # Filter by nutrition order if provided
+        # nutrition_order = self.request.query_params.get('nutrition_order')
+        # if nutrition_order:
+        #     queryset = queryset.filter(nutrition_order=nutrition_order)
+
+        # Order by occurrence_datetime descending (most recent first)
+        return queryset.order_by('-occurrence_datetime')
