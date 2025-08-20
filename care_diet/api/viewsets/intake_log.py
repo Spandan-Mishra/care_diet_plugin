@@ -12,3 +12,23 @@ class IntakeLogViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return NutritionIntakeListSerializer
         return NutritionIntakeSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Filter by facility if provided
+        facility = self.request.query_params.get('facility')
+        if facility:
+            queryset = queryset.filter(facility=facility)
+
+        # Filter by location if provided
+        location = self.request.query_params.get('location')
+        if location:
+            queryset = queryset.filter(encounter__current_location=location)
+
+        # Filter by nutrition order if provided
+        nutrition_order = self.request.query_params.get('nutrition_order')
+        if nutrition_order:
+            queryset = queryset.filter(nutrition_order=nutrition_order)
+
+        return queryset
