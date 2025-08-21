@@ -18,7 +18,10 @@ class NutritionProduct(EMRBaseModel):
     quantity = models.CharField(max_length=100)
     calories = models.IntegerField()
 
-    allergens = models.JSONField()
+    allergens = models.JSONField(
+        default=list,
+        help_text="List of allergy codes from system-allergy-code valueset. Each item should be a coding object with system, code, and display fields."
+    )
     status = models.CharField(max_length=32, choices=STATUS_CHOICES)
     note = models.TextField(null=True, blank=True)
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)

@@ -33,3 +33,8 @@ class NutritionOrder(EMRBaseModel):
     status = models.CharField(max_length=32, choices=STATUS_CHOICES)
     schedule = models.JSONField(help_text="FHIR Timing object")
     note = models.TextField(null=True, blank=True)
+    patient_allergies = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Point-in-time snapshot of patient allergies when order was created"
+    )
