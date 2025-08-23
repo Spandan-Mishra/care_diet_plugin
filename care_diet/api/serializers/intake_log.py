@@ -17,9 +17,9 @@ class NutritionIntakeSerializer(serializers.ModelSerializer):
         fields = (
             "id", "patient", "encounter", "facility", "logged_by",
             "service_type", "status", "status_reason", "intake_items",
-            "occurrence_datetime", "note", "created_date", "modified_date"
+            "occurrence_datetime", "note", "charge_item", "created_date", "modified_date"
         )
-        read_only_fields = ("id", "logged_by", "created_date", "modified_date")
+        read_only_fields = ("id", "logged_by", "charge_item", "created_date", "modified_date")
 
     def create(self, validated_data):
         validated_data["logged_by"] = self.context["request"].user
@@ -56,5 +56,5 @@ class NutritionIntakeListSerializer(serializers.ModelSerializer):
         fields = (
             "id", "patient", "encounter", "facility", "logged_by",
             "service_type", "status", "status_reason", "intake_items",
-            "occurrence_datetime", "note", "created_date", "modified_date"
+            "occurrence_datetime", "note", "charge_item", "created_date", "modified_date"
         )

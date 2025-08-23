@@ -27,3 +27,12 @@ class NutritionProduct(EMRBaseModel):
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT)
     location = models.ForeignKey(FacilityLocation, on_delete=models.PROTECT)
     service_type = models.CharField(max_length=32, choices=SERVICE_TYPE_CHOICES, default="food")
+
+    # Billing integration
+    charge_item_definition = models.ForeignKey(
+        "emr.ChargeItemDefinition",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="ChargeItemDefinition used for billing when this product is ordered"
+    )

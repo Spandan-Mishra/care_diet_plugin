@@ -33,3 +33,12 @@ class NutritionIntake(EMRBaseModel):
     intake_items = models.JSONField()
     occurrence_datetime = models.DateTimeField()
     note = models.TextField(null=True, blank=True)
+
+    # Billing integration
+    charge_item = models.ForeignKey(
+        "emr.ChargeItem",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="ChargeItem created for billing this nutrition intake"
+    )
