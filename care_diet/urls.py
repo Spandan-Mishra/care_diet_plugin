@@ -6,6 +6,7 @@ from care_diet.api.viewsets.dietician import DieticianOrderListViewSet, Dieticia
 from care_diet.api.viewsets.intake_log import IntakeLogViewSet
 from care_diet.api.viewsets.encounter_nutrition_order import EncounterNutritionOrderViewSet
 from care_diet.api.viewsets.diet import DietViewset
+from care_diet.api.viewsets.nutrition_order_batch import NutritionOrderBatchViewSet
 
 class OptionalSlashRouter(SimpleRouter):
     def __init__(self):
@@ -20,5 +21,6 @@ router.register("canteen-orders", CanteenOrderViewSet, basename="diet__canteen_o
 router.register("intake-logs", IntakeLogViewSet, basename="diet__intake_logs")
 router.register("encounter-nutrition-orders", EncounterNutritionOrderViewSet, basename="diet__encounter_nutrition_orders")
 router.register("diet", DietViewset, basename="diet__diet")
+router.register("nutrition-orders", NutritionOrderBatchViewSet, basename="diet__nutrition_orders_batch")
 
 urlpatterns = router.urls
