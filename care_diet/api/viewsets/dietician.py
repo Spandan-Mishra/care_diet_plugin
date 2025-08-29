@@ -39,16 +39,14 @@ class DieticianMealViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         if response.status_code == status.HTTP_201_CREATED:
             nutrition_order = NutritionOrder.objects.get(external_id=response.data['id'])
 
-            # Create billing if product has charge item definition
-            if (hasattr(nutrition_order, 'nutrition_product') and
-                nutrition_order.nutrition_product and
-                nutrition_order.nutrition_product.charge_item_definition):
-
-                self._create_nutrition_order_charge_item(nutrition_order)
+            # Create billing for each product that has charge item definition
+            for product in nutrition_order.products.all():
+                if product.charge_item_definition:
+                    self._create_nutrition_order_charge_item(nutrition_order, product)
 
         return response
 
-    def _create_nutrition_order_charge_item(self, nutrition_order):
+    def _create_nutrition_order_charge_item(self, nutrition_order, product):
         """Create ChargeItem for NutritionOrder based on product's ChargeItemDefinition."""
         try:
             # Get or create account for patient
@@ -67,11 +65,11 @@ class DieticianMealViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 encounter=nutrition_order.encounter,
                 service_resource="nutrition_order",
                 service_resource_id=str(nutrition_order.external_id),
-                charge_item_definition=nutrition_order.nutrition_product.charge_item_definition,
+                charge_item_definition=product.charge_item_definition,
                 status=ChargeItemStatusOptions.billable.value,
                 facility=nutrition_order.facility,
-                title=f"Nutrition Order - {nutrition_order.nutrition_product.name}",
-                description=f"Nutrition order for {nutrition_order.nutrition_product.name}",
+                title=f"Nutrition Order - {product.name}",
+                description=f"Nutrition order for {product.name}",
             )
 
             return charge_item

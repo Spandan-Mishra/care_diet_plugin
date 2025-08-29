@@ -7,6 +7,8 @@ from care_diet.api.viewsets.intake_log import IntakeLogViewSet
 from care_diet.api.viewsets.encounter_nutrition_order import EncounterNutritionOrderViewSet
 from care_diet.api.viewsets.diet import DietViewset
 from care_diet.api.viewsets.nutrition_order_batch import NutritionOrderBatchViewSet
+from care_diet.api.viewsets.charge_item import ChargeItemViewSet
+from care_diet.api.viewsets.charge_item_definition import ChargeItemDefinitionViewSet
 
 class OptionalSlashRouter(SimpleRouter):
     def __init__(self):
@@ -22,5 +24,7 @@ router.register("intake-logs", IntakeLogViewSet, basename="diet__intake_logs")
 router.register("encounter-nutrition-orders", EncounterNutritionOrderViewSet, basename="diet__encounter_nutrition_orders")
 router.register("diet", DietViewset, basename="diet__diet")
 router.register("nutrition-orders", NutritionOrderBatchViewSet, basename="diet__nutrition_orders_batch")
+router.register("charge_item", ChargeItemViewSet, basename="diet__charge_item")
+router.register("charge_item_definition", ChargeItemDefinitionViewSet, basename="diet__charge_item_definition")
 
 urlpatterns = router.urls
