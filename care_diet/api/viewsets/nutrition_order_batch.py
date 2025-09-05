@@ -6,6 +6,8 @@ from django.db import transaction
 from care_diet.models import NutritionOrder, NutritionProduct
 from care.emr.models import Patient, Encounter, FacilityLocation, Account, ChargeItem
 from care.emr.resources.charge_item.spec import ChargeItemStatusOptions
+from care.emr.resources.charge_item.apply_charge_item_definition import apply_charge_item_definition
+from care.emr.resources.account.default_account import get_default_account
 from care.facility.models import Facility
 from care_diet.api.serializers.dietician import NutritionOrderSerializer
 
@@ -54,10 +56,10 @@ class NutritionOrderBatchViewSet(mixins.CreateModelMixin, viewsets.GenericViewSe
                         products = NutritionProduct.objects.filter(external_id__in=product_ids)
                         nutrition_order.products.set(products)
 
-                    # Create billing if products have charge item definitions
-                    for product in nutrition_order.products.all():
-                        if product.charge_item_definition:
-                            self._create_nutrition_order_charge_item(nutrition_order, product)
+                        # Create billing using the same pattern as the main serializer
+                        for product in products:
+                            if product.charge_item_definition:
+                                self._create_nutrition_order_charge_item(nutrition_order, product)
 
                     created_orders.append(serializer.data)
                 else:
@@ -80,32 +82,29 @@ class NutritionOrderBatchViewSet(mixins.CreateModelMixin, viewsets.GenericViewSe
     def _create_nutrition_order_charge_item(self, nutrition_order, product):
         """Create ChargeItem for NutritionOrder based on product's ChargeItemDefinition."""
         try:
-            # Get or create account for patient
-            account, created = Account.objects.get_or_create(
-                patient=nutrition_order.patient,
-                defaults={
-                    'status': 'active',
-                    'facility': nutrition_order.facility,
-                }
+            # Use the standard billing flow like ActivityDefinition -> ServiceRequest
+            account = get_default_account(nutrition_order.patient, nutrition_order.facility)
+
+            # Apply charge item definition using the standard function
+            charge_item = apply_charge_item_definition(
+                product.charge_item_definition,
+                nutrition_order.encounter,
+                account,
+                quantity=1.0  # Default quantity, could be made configurable
             )
 
-            # Create ChargeItem
-            charge_item = ChargeItem.objects.create(
-                account=account,
-                patient=nutrition_order.patient,
-                encounter=nutrition_order.encounter,
-                service_resource="nutrition_order",
-                service_resource_id=str(nutrition_order.external_id),
-                charge_item_definition=product.charge_item_definition,
-                status=ChargeItemStatusOptions.billable.value,
-                facility=nutrition_order.facility,
-                title=f"Nutrition Order - {product.name}",
-                description=f"Nutrition order for {product.name}",
-            )
+            # Set nutrition order specific fields
+            charge_item.service_resource = "nutrition_order"
+            charge_item.service_resource_id = str(nutrition_order.external_id)
+            charge_item.title = f"Nutrition Order - {product.name}"
+            charge_item.description = f"Nutrition order for {product.name} ({product.code})"
+            charge_item.save()
 
             return charge_item
 
         except Exception as e:
             # Log error but don't fail the order creation
-            print(f"Failed to create charge item for nutrition order {nutrition_order.external_id}: {e}")
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Failed to create charge item for nutrition order {nutrition_order.external_id}, product {product.external_id}: {e}")
             return None
